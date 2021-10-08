@@ -1,0 +1,60 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.5'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.skybit'
+version = '0.9-SNAPSHOT'
+sourceCompatibility = '8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencyManagement {
+	dependencies {
+
+		dependencySet(group: 'org.slf4j', version: '1.7.32') {
+			entry 'slf4j-api'
+			entry 'log4j-over-slf4j'
+			entry 'jcl-over-slf4j'
+			entry 'jul-to-slf4j'
+		}
+		dependency 'ch.qos.logback:logback-classic:1.2.6'
+		dependency 'org.apache.commons:commons-lang3:3.8.1'
+		dependency 'org.liquibase:liquibase-core:3.8.2'
+		dependency 'commons-io:commons-io:2.8.0'
+		dependency 'org.apache.httpcomponents:httpclient:4.5.13'
+		dependency 'org.seleniumhq.selenium:selenium-java:4.0.0-beta-1'
+		dependency 'org.jsoup:jsoup:1.13.1'
+		dependency 'org.apache.commons:commons-exec:1.3'
+
+		dependencySet(group: 'org.seleniumhq.selenium', version: '4.0.0-rc-2') {
+			entry 'selenium-api'
+			entry 'selenium-java'
+			entry 'selenium-chrome-driver'
+			entry 'selenium-support'
+			entry 'selenium-edge-driver'
+			entry 'selenium-remote-driver'
+			entry 'selenium-safari-driver'
+			entry 'selenium-opera-driver'
+			entry 'selenium-ie-driver'
+			entry 'selenium-firefox-driver'
+		}
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.seleniumhq.selenium:selenium-api'
+	implementation 'org.seleniumhq.selenium:selenium-java'
+	implementation 'org.seleniumhq.selenium:selenium-chrome-driver'
+	implementation 'org.apache.httpcomponents:httpclient'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+	useJUnitPlatform()
+}
