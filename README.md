@@ -3,10 +3,37 @@
 
 ![????](doc/img/01_audio_unavailable.png)
 
-Autorská práva dovolující ponechat zajímavé a skvělé počiny pouze 1 měsíc - obrovská škoda.
+Autorská práva dovolující ponechat zajímavé a skvělé počiny __pouze 1 měsíc__ - obrovská škoda. Zazálohujte si pro vlastní potřebu audio soubory.
+
+
+## Run via Docker
+
 
 ```shell
-./gradlew bootRun --args='https://www.mujrozhlas.cz/cetba-s-hvezdickou/za-hranou-lasky-lolita-vladimira-nabokova-jako-cetba-s-hvezdickou'  
+export FOLDER=${HOME}/mujrozhlas-download
+mkdir -p ${FOLDER}
+docker run --rm -v ${FOLDER}:/download bardolf/mujrozhlas --url.to.download='https://www.mujrozhlas.cz/cetba-na-pokracovani/pavel-sanajev-pochovejte-me-pod-podlahu'
+```
+
+debug
+
+```shell
+docker run --rm -v ${HOME}/muj-rozhlas-download:/download -p 5005:5005 --env JAVA_OPTS='-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005' bardolf/mujrozhlas --url.to.download='https://www.mujrozhlas.cz/cetba-na-pokracovani/pavel-sanajev-pochovejte-me-pod-podlahu' 
+```
+
+## Build Docker
+ 
+```shell
+docker build -t bardolf/mujrozhlas .
+```
+
+
+
+## Run via gradle
+
+
+```shell
+./gradlew bootRun --url.to.download='https://www.mujrozhlas.cz/cetba-na-pokracovani/pavel-sanajev-pochovejte-me-pod-podlahu'  
 ```
 
 ```log

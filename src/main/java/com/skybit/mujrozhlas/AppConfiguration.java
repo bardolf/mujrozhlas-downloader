@@ -11,8 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-
 @Configuration
 @EnableScheduling
 @EnableCaching
@@ -26,23 +24,19 @@ public class AppConfiguration {
     private boolean headless;
 
     @Bean
-    public ChromeDriver getChromeDriver() {
-        if (StringUtils.hasLength(chromeDriverBinary)) {
-            System.setProperty("webdriver.chrome.driver", chromeDriverBinary);
-        } else {
-            System.setProperty("webdriver.chrome.driver", "src/main/resources/webdriver/chromedriver");
-        }
-        ChromeOptions options = new ChromeOptions();
-        if (headless) {
-            options.addArguments("--headless");
-        }
-        options.addArguments("--window-size=1920,1080");
-        options.addArguments("incognito");
-
-        //next lines not necessary
-        options.addArguments("--disable-blink-features=AutomationControlled");
-        options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
-
-        return new ChromeDriver(options);
+    public ChromeDriverFactory getChromeDriverFactory() {
+        return () -> {
+            if (StringUtils.hasLength(chromeDriverBinary)) {
+                System.setProperty("webdriver.chrome.driver", chromeDriverBinary);
+            } else {
+                System.setProperty("webdriver.chrome.driver", "src/main/resources/webdriver/chromedriver");
+            }
+            ChromeOptions options = new ChromeOptions();
+            if (headless) {
+                options.addArguments("--headless");
+            }
+            options.addArguments("--no-sandbox");
+            return new ChromeDriver(options);
+        };
     }
 }

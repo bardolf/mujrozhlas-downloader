@@ -24,7 +24,7 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
 
-    <logger name="org.openqa.selenium.devtools.Connection" level="WARN">
+    <logger name="org.openqa.selenium.devtools" level="WARN">
         <appender-ref ref="CONSOLE"/>
     </logger>
 

@@ -22,13 +22,7 @@ public class MujRozhlasDownloaderApplication {
 
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
-            if (args.length != 1) {
-                log.warn("Provide url as an argument.");
-                return;
-            }
-            downloader.download(args[0]);
-        };
+        return args -> downloader.download();
     }
 
 }
