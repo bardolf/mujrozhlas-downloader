@@ -5,6 +5,7 @@
 
 Autorská práva dovolující ponechat zajímavé a skvělé počiny __pouze 1 měsíc__ - obrovská škoda. Zazálohujte si pro vlastní potřebu audio soubory.
 
+Utility downloads either whole series, if it is one or just one file otherwise. 
 
 ## Run via Docker
 

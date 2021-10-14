@@ -57,50 +57,45 @@ public class Downloader {
             driver.manage().timeouts().implicitlyWait(Duration.of(5, ChronoUnit.SECONDS));
             driver.get(url);
 
-            //show all episodes
-            List<WebElement> nextEpisodes = driver.findElements(By.className("more-link__link"));
-            while (!nextEpisodes.isEmpty()) {
-                nextEpisodes.get(0).click();
-                WebElement spinner = driver.findElement(By.className("more-link__spinner"));
-                WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.of(5, ChronoUnit.SECONDS));
-                webDriverWait.until(ExpectedConditions.invisibilityOf(spinner));
-                nextEpisodes = driver.findElements(By.className("more-link__link"));
-            }
+            //is it series or one episode only
+            List<WebElement> episodesTitle = driver.findElements(By.id("dily-serialu-title"));
+            if (episodesTitle.isEmpty()) {
+                log.info("It is not a series (nejedná se o seriál).");
+                WebElement title = driver.findElement(By.className("player-header__title-text"));
+                List<WebElement> fullPlayer = driver.findElements(By.id("fullPlayer"));
+                if (fullPlayer.isEmpty()) {
+                    log.error("There is no full player?!");
+                    return;
+                }
+                WebElement button = fullPlayer.get(0).findElement(By.className("audio-btn--play"));
+                pressButtonAndDownload(driver, button, title.getText(), "");
 
-            //iterate through all items
-            List<WebElement> items = driver.findElements(By.className("c-episodes__item"));
-            if (items.isEmpty()) {
-                log.error("The given url doesn't contain any episodes to download.");
-                return;
-            }
+            } else {
+                log.info("It is a series (jedná se o seriál).");
+                //show all episodes
+                List<WebElement> nextEpisodes = driver.findElements(By.className("more-link__link"));
+                while (!nextEpisodes.isEmpty()) {
+                    nextEpisodes.get(0).click();
+                    WebElement spinner = driver.findElement(By.className("more-link__spinner"));
+                    WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.of(5, ChronoUnit.SECONDS));
+                    webDriverWait.until(ExpectedConditions.invisibilityOf(spinner));
+                    nextEpisodes = driver.findElements(By.className("more-link__link"));
+                }
 
-            int i = 1;
-            for (WebElement item : items) {
-                WebElement button = item.findElement(By.className("b-episode__play-btn"));
-                WebElement title = item.findElement(By.className("b-episode__title"));
-                List<WebElement> metas = item.findElements(By.className("meta-info__episode"));
-                String meta = metas.isEmpty() ? "" : String.format("_%02d_", i++) + metas.get(0).getText();
+                //iterate through all items
+                List<WebElement> items = driver.findElements(By.className("c-episodes__item"));
+                if (items.isEmpty()) {
+                    log.error("The given url doesn't contain any episodes to download.");
+                    return;
+                }
 
-                CountDownLatch latch = new CountDownLatch(1);
-                Holder<String> urlHolder = new Holder<>();
-                waitForMedia(driver, latch, urlHolder);
-
-                //scroll to element
-                int elementPosition = button.getLocation().getY();
-                String js = String.format("window.scroll(0, %s)", elementPosition);
-                ((JavascriptExecutor) driver).executeScript(js);
-
-                //start the playing
-                button.click();
-                try {
-                    boolean success = latch.await(2, TimeUnit.SECONDS);
-                    if (success) {
-                        log.info("Downloading {}/{} - {}.", title.getText(), meta, urlHolder.getValue());
-                        String filename = StringUtils.stripAccents(title.getText() + meta + ".mp3").replace(' ', '_');
-                        downloadFile(urlHolder.getValue(), outputFolder, filename);
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                int i = 1;
+                for (WebElement item : items) {
+                    WebElement button = item.findElement(By.className("b-episode__play-btn"));
+                    WebElement title = item.findElement(By.className("b-episode__title"));
+                    List<WebElement> metas = item.findElements(By.className("meta-info__episode"));
+                    String meta = metas.isEmpty() ? "" : String.format("_%02d_", i++) + metas.get(0).getText();
+                    pressButtonAndDownload(driver, button, title.getText(), meta);
                 }
             }
 
@@ -116,6 +111,30 @@ public class Downloader {
                 driver.quit();
             }
             shutdownManager.initiateShutdown(0);
+        }
+    }
+
+    private void pressButtonAndDownload(ChromeDriver driver, WebElement button, String title, String meta) {
+        CountDownLatch latch = new CountDownLatch(1);
+        Holder<String> urlHolder = new Holder<>();
+        waitForMedia(driver, latch, urlHolder);
+
+        //scroll to element
+        int elementPosition = button.getLocation().getY();
+        String js = String.format("window.scroll(0, %s)", elementPosition);
+        ((JavascriptExecutor) driver).executeScript(js);
+
+        //start the playing
+        button.click();
+        try {
+            boolean success = latch.await(2, TimeUnit.SECONDS);
+            if (success) {
+                log.info("Downloading {}/{} - {}.", title, meta, urlHolder.getValue());
+                String filename = StringUtils.stripAccents(title + meta + ".mp3").replace(' ', '_');
+                downloadFile(urlHolder.getValue(), outputFolder, filename);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
