@@ -11,9 +11,7 @@ Utility downloads either whole series, if it is one or just one file otherwise.
 
 
 ```shell
-export FOLDER=${HOME}/mujrozhlas-download
-mkdir -p ${FOLDER}
-docker run --rm -v ${FOLDER}:/download bardolf/mujrozhlas --url.to.download='https://www.mujrozhlas.cz/cetba-na-pokracovani/pavel-sanajev-pochovejte-me-pod-podlahu'
+docker run --rm -v `pwd`:/download bardolf/mujrozhlas --url.to.download='https://www.mujrozhlas.cz/cetba-na-pokracovani/pavel-sanajev-pochovejte-me-pod-podlahu'
 ```
 
 debug
@@ -79,5 +77,13 @@ ChromeDriver was started successfully.
 09:43:54.604 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_05_5. díl - https://portal.rozhlas.cz/sites/default/files/audios/f0249d3588c9ffac16ff522825180cb4.mp3.
 09:44:05.887 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_06_6. díl - https://portal.rozhlas.cz/sites/default/files/audios/590df50f8c42af1e88dcc61ce0c99d28.mp3.
 09:44:19.060 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_07_7. díl - https://portal.rozhlas.cz/sites/default/files/audios/071efda45c384c26d61e76b472ffbbca.mp3.
-
 ``` 
+
+## Build & Publish
+
+```shell
+docker build -t bardolf/mujrozhlas .
+docker tag bardolf/mujrozhlas bardolf/mujrozhlas:<version>
+docker push  bardolf/mujrozhlas:<version>
+docker push  bardolf/mujrozhlas:latest
+```

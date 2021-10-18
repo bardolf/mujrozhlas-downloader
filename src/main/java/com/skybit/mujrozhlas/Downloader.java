@@ -3,12 +3,15 @@ package com.skybit.mujrozhlas;
 import com.skybit.mujrozhlas.util.Holder;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -94,8 +97,8 @@ public class Downloader {
                     WebElement button = item.findElement(By.className("b-episode__play-btn"));
                     WebElement title = item.findElement(By.className("b-episode__title"));
                     List<WebElement> metas = item.findElements(By.className("meta-info__episode"));
-                    String meta = metas.isEmpty() ? "" : String.format("_%02d_", i++) + metas.get(0).getText();
-                    pressButtonAndDownload(driver, button, title.getText(), meta);
+                    String meta = metas.isEmpty() ? "" : metas.get(0).getText();
+                    pressButtonAndDownload(driver, button, String.format("%02d_", i++) + title.getText(), meta);
                 }
             }
 
@@ -127,14 +130,29 @@ public class Downloader {
         //start the playing
         button.click();
         try {
-            boolean success = latch.await(2, TimeUnit.SECONDS);
+            boolean success = latch.await(5, TimeUnit.SECONDS);
             if (success) {
-                log.info("Downloading {}/{} - {}.", title, meta, urlHolder.getValue());
-                String filename = StringUtils.stripAccents(title + meta + ".mp3").replace(' ', '_');
-                downloadFile(urlHolder.getValue(), outputFolder, filename);
+                if (urlHolder.getValue().endsWith("manifest.mpd")) {
+                    log.info("MPD stream detected.");
+                    String filename = StringUtils.stripAccents(title + "_" + meta + ".m4a").replace(' ', '_');
+                    String line = "youtube-dl " + urlHolder.getValue() + " --output " + outputFolder + "/" + filename;
+                    CommandLine cmdLine = CommandLine.parse(line);
+                    DefaultExecutor executor = new DefaultExecutor();
+                    int exitValue = executor.execute(cmdLine);
+                    if (exitValue != 0) {
+                        log.warn("Running youtube-dl ends with exit code {}", exitValue);
+                    }
+                } else if (urlHolder.getValue().endsWith("mp3")) {
+                    log.info("mp3 file detected.");
+                    log.info("Downloading {}/{} - {}.", title, meta, urlHolder.getValue());
+                    String filename = StringUtils.stripAccents(title + "_" + meta + ".mp3").replace(' ', '_');
+                    downloadFile(urlHolder.getValue(), outputFolder, filename);
+                }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            log.error("Unable to download a file.", e);
         }
     }
 
@@ -145,6 +163,10 @@ public class Downloader {
         devTools.addListener(Network.requestWillBeSent(),
                 entry -> {
                     if (entry.getRequest().getUrl().endsWith("mp3")) {
+                        urlHolder.setValue(entry.getRequest().getUrl());
+                        latch.countDown();
+                    }
+                    if (entry.getRequest().getUrl().endsWith("manifest.mpd")) {
                         urlHolder.setValue(entry.getRequest().getUrl());
                         latch.countDown();
                     }

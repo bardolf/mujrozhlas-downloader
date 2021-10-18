@@ -27,6 +27,11 @@ RUN wget https://chromedriver.storage.googleapis.com/94.0.4606.61/chromedriver_l
     && mv chromedriver /usr/bin/chromedriver \
     && rm chromedriver_linux64.zip
 
+RUN export DEBIAN_FRONTEND=noninteractive  \
+    && apt update \
+    && apt install -y youtube-dl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
