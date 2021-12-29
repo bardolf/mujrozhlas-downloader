@@ -60,6 +60,15 @@ public class Downloader {
             driver.manage().timeouts().implicitlyWait(Duration.of(5, ChronoUnit.SECONDS));
             driver.get(url);
 
+            //close the cookie window
+            sleep(1000);
+            List<WebElement> cookieButtons = driver.findElements(By.id("c-p-bn"));
+            if (!cookieButtons.isEmpty()) {
+                log.info("Closing cookie window.");
+                cookieButtons.get(0).click();
+                sleep(1000);
+            }
+
             //is it series or one episode only
             List<WebElement> episodesTitle = driver.findElements(By.id("dily-serialu-title"));
             if (episodesTitle.isEmpty()) {
@@ -188,6 +197,14 @@ public class Downloader {
             }
         } catch (Exception e) {
             log.error("Downloading error ", e);
+        }
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }
