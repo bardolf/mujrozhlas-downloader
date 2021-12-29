@@ -154,7 +154,9 @@ public class Downloader {
                 } else if (urlHolder.getValue().endsWith("mp3")) {
                     log.info("mp3 file detected.");
                     log.info("Downloading {}/{} - {}.", title, meta, urlHolder.getValue());
-                    String filename = StringUtils.stripAccents(title + "_" + meta + ".mp3").replace(' ', '_');
+                    String filename = StringUtils.stripAccents(title + "_" + meta + ".mp3")
+                            .replace(' ', '_').replace(":", "_").replace("(", "_")
+                            .replace(")", "_").replace("/", "_");
                     downloadFile(urlHolder.getValue(), outputFolder, filename);
                 }
             }
