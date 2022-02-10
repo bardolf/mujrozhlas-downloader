@@ -70,7 +70,10 @@ public class Downloader {
             }
 
             //is it series or one episode only
-            List<WebElement> episodesTitle = driver.findElements(By.id("dily-serialu-title"));
+            List<WebElement> episodesTitle = driver.findElements(By.xpath("//*[starts-with(@id,'dily-serialu')]"));
+            if (episodesTitle.isEmpty()) {
+                episodesTitle = driver.findElements(By.id("epizody-poradu-title"));
+            }
             if (episodesTitle.isEmpty()) {
                 log.info("It is not a series (nejedná se o seriál).");
                 WebElement title = driver.findElement(By.className("player-header__title-text"));
