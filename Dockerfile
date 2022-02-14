@@ -14,15 +14,16 @@ RUN apt update \
 
 WORKDIR /tmp
 
+COPY google-chrome-stable_current_amd64.deb .
+
 RUN export DEBIAN_FRONTEND=noninteractive  \
     && apt update \
     && apt install -y wget  xorg xserver-xorg xvfb libx11-dev libxext-dev \
-    && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt install -y ./google-chrome-stable_current_amd64.deb locales\
     && rm ./google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://chromedriver.storage.googleapis.com/94.0.4606.61/chromedriver_linux64.zip \
+RUN wget https://chromedriver.storage.googleapis.com/98.0.4758.80/chromedriver_linux64.zip \
     && unzip chromedriver_linux64.zip \
     && mv chromedriver /usr/bin/chromedriver \
     && rm chromedriver_linux64.zip
