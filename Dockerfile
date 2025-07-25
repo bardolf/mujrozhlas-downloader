@@ -27,7 +27,9 @@ WORKDIR /tmp
 
 COPY google-chrome-stable_current_amd64.deb .
 
-RUN apt update && apt install -y ./google-chrome-stable_current_amd64.deb \
+RUN wget https://mirror.cs.uchicago.edu/google-chrome/pool/main/g/google-chrome-stable/google-chrome-stable_138.0.7204.168-1_amd64.deb \
+    && apt update \
+    && apt install -y ./google-chrome-stable_138.0.7204.168-1_amd64.deb \
     && rm ./google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
