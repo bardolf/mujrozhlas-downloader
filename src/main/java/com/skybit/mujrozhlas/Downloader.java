@@ -1,15 +1,6 @@
 package com.skybit.mujrozhlas;
 
 import com.skybit.mujrozhlas.util.Holder;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +14,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v97.network.Network;
+import org.openqa.selenium.devtools.v138.network.Network;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -31,6 +22,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class Downloader {
@@ -69,6 +70,9 @@ public class Downloader {
                 sleep(1000);
             }
 
+            JavascriptExecutor js = driver;
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
             //is it series or one episode only
             List<WebElement> episodesTitle = driver.findElements(By.xpath("//*[starts-with(@id,'dily-serialu')]"));
             if (episodesTitle.isEmpty()) {
@@ -82,19 +86,29 @@ public class Downloader {
                     log.error("There is no full player?!");
                     return;
                 }
-                WebElement button = fullPlayer.get(0).findElement(By.className("audio-btn--play"));
+                WebElement button = fullPlayer.getFirst().findElement(By.className("audio-btn--play"));
                 pressButtonAndDownload(driver, button, title.getText(), "");
 
             } else {
                 log.info("It is a series (jedná se o seriál).");
                 //show all episodes
                 List<WebElement> nextEpisodes = driver.findElements(By.className("more-link__link"));
+
                 while (!nextEpisodes.isEmpty()) {
-                    nextEpisodes.get(0).click();
-                    WebElement spinner = driver.findElement(By.className("more-link__spinner"));
-                    WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.of(5, ChronoUnit.SECONDS));
-                    webDriverWait.until(ExpectedConditions.invisibilityOf(spinner));
-                    nextEpisodes = driver.findElements(By.className("more-link__link"));
+                    try {
+                        WebElement nextLink = nextEpisodes.get(0);
+                        js.executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", nextLink);
+                        wait.until(ExpectedConditions.elementToBeClickable(nextLink));
+                        nextLink.click();
+                        // Wait for the spinner to disappear
+                        WebElement spinner = driver.findElement(By.className("more-link__spinner"));
+                        wait.until(ExpectedConditions.invisibilityOf(spinner));
+                        // Read links again, if there are more episodes
+                        nextEpisodes = driver.findElements(By.className("more-link__link"));
+                    } catch (Exception e) {
+                        log.warn("Chyba při kliknutí na další epizodu: " + e.getMessage());
+                        break; // nebo pokračuj bez break pokud chceš pokračovat dál i po chybě
+                    }
                 }
 
                 //iterate through all items
@@ -147,12 +161,13 @@ public class Downloader {
                 if (urlHolder.getValue().endsWith("manifest.mpd")) {
                     log.info("MPD stream detected.");
                     String filename = StringUtils.stripAccents(title + "_" + meta + ".m4a").replace(' ', '_');
-                    String line = "youtube-dl " + urlHolder.getValue() + " --output " + outputFolder + "/" + filename;
+                    String line = "yt-dlp_linux " + urlHolder.getValue() + " --output " + outputFolder + "/" + filename;
+                    log.info("Downloading {}/{} - {}.", title, meta, line);
                     CommandLine cmdLine = CommandLine.parse(line);
                     DefaultExecutor executor = new DefaultExecutor();
                     int exitValue = executor.execute(cmdLine);
                     if (exitValue != 0) {
-                        log.warn("Running youtube-dl ends with exit code {}", exitValue);
+                        log.warn("Running yt-dlp_linux ends with exit code {}", exitValue);
                     }
                 } else if (urlHolder.getValue().endsWith("mp3")) {
                     log.info("mp3 file detected.");
@@ -173,7 +188,7 @@ public class Downloader {
     private void waitForMedia(ChromeDriver driver, CountDownLatch latch, Holder<String> urlHolder) {
         DevTools devTools = driver.getDevTools();
         devTools.createSession();
-        devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+        devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
         devTools.addListener(Network.requestWillBeSent(),
                 entry -> {
                     if (entry.getRequest().getUrl().endsWith("mp3")) {

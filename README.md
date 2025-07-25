@@ -11,7 +11,7 @@ Utility downloads either whole series, if it is one or just one file otherwise.
 
 
 ```shell
-docker run --rm -v `pwd`:/download bardolf/mujrozhlas --url.to.download='https://www.mujrozhlas.cz/cetba-na-pokracovani/pavel-sanajev-pochovejte-me-pod-podlahu'
+docker run --rm --user $(id -u):$(id -g) -v `pwd`:/download bardolf/mujrozhlas --url.to.download='https://www.mujrozhlas.cz/cteni-na-pokracovani/prasina-1-napinave-patrani-po-davnem-tajemstvi-v-zahadne-prazske-ctvrti'
 ```
 
 debug
@@ -36,47 +36,41 @@ docker build -t bardolf/mujrozhlas .
 ## Example 
 
 ```log
-$ export FOLDER=${HOME}/mujrozhlas-download 
-$ mkdir -p ${FOLDER} 
-$ docker run --rm -v ${FOLDER}:/download bardolf/mujrozhlas --url.to.download='https://www.mujrozhlas.cz/cetba-na-pokracovani/pavel-sanajev-pochovejte-me-pod-podlahu'
- 
-Unable to find image 'bardolf/mujrozhlas:latest' locally
-latest: Pulling from bardolf/mujrozhlas
-f3ef4ff62e0d: Already exists 
-e9d354ddc802: Already exists 
-747b166626e9: Already exists 
-2c0d1c428778: Already exists 
-59f6c0bc2574: Pull complete 
-30d3d7789dd4: Pull complete 
-638c79a869c5: Pull complete 
-2e5d8ad43464: Pull complete 
-Digest: sha256:dedad8a636a6198b3efc6dcc5a65388d08f3c82bae9f55d1a88fef37328d8100
-Status: Downloaded newer image for bardolf/mujrozhlas:latest
+$ docker run --rm --user $(id -u):$(id -g) -v `pwd`:/download bardolf/mujrozhlas --url.to.download='https://www.mujrozhlas.cz/cteni-na-pokracovani/prasina-1-napinave-patrani-po-davnem-tajemstvi-v-zahadne-prazske-ctvrti'
  ______  _     _   _____    ______   _____ _______ _     _ _                 _     ______ _______
 |  ___ \| |   | | (_____)  (_____ \ / ___ (_______) |   | | |        /\     | |   / _____|_______)
 | | _ | | |   | |    _      _____) ) |   | | __   | |__ | | |       /  \     \ \ | /        __
 | || || | |   | |   | |    (_____ (| |   | |/ /   |  __)| | |      / /\ \     \ \| |       / /
 | || || | |___| |___| |          | | |___| / /____| |   | | |_____| |__| |_____) ) \_____ / /____
 |_||_||_|\______(____/           |_|\_____(_______)_|   |_|_______)______(______(_)______|_______)
-                                                                                    D0WNL0AD3R 0.9
-09:42:06.476 [main] INFO  c.s.m.MujRozhlasDownloaderApplication - Starting MujRozhlasDownloaderApplication using Java 11.0.11 on c1beaf2d16c7 with PID 7 (/app/mujrozhlas-downloader-0.9-SNAPSHOT.jar started by app in /app)
-09:42:06.478 [main] DEBUG c.s.m.MujRozhlasDownloaderApplication - Running with Spring Boot v2.5.5, Spring v5.3.10
-09:42:06.478 [main] INFO  c.s.m.MujRozhlasDownloaderApplication - No active profile set, falling back to default profiles: default
-09:42:06.930 [main] INFO  c.s.m.MujRozhlasDownloaderApplication - Started MujRozhlasDownloaderApplication in 0.721 seconds (JVM running for 1.101)
-09:42:06.931 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading from https://www.mujrozhlas.cz/cetba-na-pokracovani/pavel-sanajev-pochovejte-me-pod-podlahu
-Starting ChromeDriver 94.0.4606.61 ([1633945324187b.7381f95]8[3S8EeVdE0RbE1]c:6 9bbibn4de(5)1 efaa0i2l5e2d1:7 1C8a5n4n9o1t5 -arssigne frse/qbureasntcehd- haedaddrse/s4s6 0(69@9{)#
-1204}) on port 32045
-Only local connections are allowed.
-Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
-ChromeDriver was started successfully.
-09:42:07.614 [Forwarding newSession on session null to remote] INFO  o.o.s.remote.ProtocolHandshake - Detected dialect: W3C
-09:42:13.545 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_01_1. díl - https://portal.rozhlas.cz/sites/default/files/audios/e4e271425a0cb96143a3aa3fa074e7d7.mp3.
-09:42:56.439 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_02_2. díl - https://portal.rozhlas.cz/sites/default/files/audios/ff27fb7dd253e3f2802463501c3e259c.mp3.
-09:43:23.241 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_03_3. díl - https://portal.rozhlas.cz/sites/default/files/audios/9580f5edd9e0c3b9cfbd534113ec274d.mp3.
-09:43:41.796 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_04_4. díl - https://portal.rozhlas.cz/sites/default/files/audios/e0306fc09d2a6f19b0148efeaf5a6ee0.mp3.
-09:43:54.604 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_05_5. díl - https://portal.rozhlas.cz/sites/default/files/audios/f0249d3588c9ffac16ff522825180cb4.mp3.
-09:44:05.887 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_06_6. díl - https://portal.rozhlas.cz/sites/default/files/audios/590df50f8c42af1e88dcc61ce0c99d28.mp3.
-09:44:19.060 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading Pavel Sanajev: Pochovejte mě pod podlahu/_07_7. díl - https://portal.rozhlas.cz/sites/default/files/audios/071efda45c384c26d61e76b472ffbbca.mp3.
+                                                                                  D0WNL0AD3R 0.10.1
+19:26:43.602 [main] INFO  c.s.m.MujRozhlasDownloaderApplication - Starting MujRozhlasDownloaderApplication v0.10-SNAPSHOT using Java 24.0.2 with PID 1 (/app/mujrozhlas-downloader-0.10-SNAPSHOT.jar started by ubuntu in /app)
+19:26:43.603 [main] DEBUG c.s.m.MujRozhlasDownloaderApplication - Running with Spring Boot v3.5.4, Spring v6.2.9
+19:26:43.604 [main] INFO  c.s.m.MujRozhlasDownloaderApplication - No active profile set, falling back to 1 default profile: "default"
+19:26:43.983 [main] INFO  c.s.m.MujRozhlasDownloaderApplication - Started MujRozhlasDownloaderApplication in 0.579 seconds (process running for 0.958)
+19:26:43.986 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading from https://www.mujrozhlas.cz/cteni-na-pokracovani/prasina-1-napinave-patrani-po-davnem-tajemstvi-v-zahadne-prazske-ctvrti
+19:26:51.554 [main] INFO  com.skybit.mujrozhlas.Downloader - It is a series (jedná se o seriál).
+19:26:58.020 [main] INFO  com.skybit.mujrozhlas.Downloader - MPD stream detected.
+19:26:58.028 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading 01_Prašina/1. díl - yt-dlp_linux https://croaod.cz/stream/5c666f13-eee2-4527-aa42-81c3981abee5.m4a/manifest.mpd --output /download/01_Prasina_1._dil.m4a.
+[generic] Extracting URL: https://croaod.cz/stream/5c666f13-eee2-4527-aa42-81c3981abee5.m4a/manifest.mpd
+[generic] manifest: Downloading webpage
+WARNING: [generic] Falling back on generic information extractor
+[generic] manifest: Extracting information
+[info] manifest: Downloading 1 format(s): p0aa0br193445
+[dashsegments] Total fragments: 77
+[download] Destination: /download/01_Prasina_1._dil.m4a
+[download] 100% of   17.77MiB in 00:00:08 at 2.04MiB/s                  
+WARNING: manifest: writing DASH m4a. Only some players support this container. Install ffmpeg to fix this automatically
+WARNING: manifest: Possible duplicate MOOV atoms. Install ffmpeg to fix this automatically
+19:27:08.512 [main] INFO  com.skybit.mujrozhlas.Downloader - MPD stream detected.
+19:27:08.512 [main] INFO  com.skybit.mujrozhlas.Downloader - Downloading 02_Prašina/2. díl - yt-dlp_linux https://croaod.cz/stream/a3f85009-b4ec-4caf-9b9a-c92ce3cb177b.m4a/manifest.mpd --output /download/02_Prasina_2._dil.m4a.
+[generic] Extracting URL: https://croaod.cz/stream/a3f85009-b4ec-4caf-9b9a-c92ce3cb177b.m4a/manifest.mpd
+[generic] manifest: Downloading webpage
+WARNING: [generic] Falling back on generic information extractor
+[generic] manifest: Extracting information
+[info] manifest: Downloading 1 format(s): p0aa0br193598
+[dashsegments] Total fragments: 78
+[download] Destination: /download/02_Prasina_2._dil.m4a
 ``` 
 
 ## Build & Publish

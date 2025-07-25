@@ -1,13 +1,13 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.5'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.5.4'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
-    id 'ca.cutterslade.analyze' version '1.7.1'
+    id 'ca.cutterslade.analyze' version '1.10.0'
 }
 
 group = 'com.skybit'
-version = '0.9-SNAPSHOT'
-sourceCompatibility = '8'
+version = '0.10-SNAPSHOT'
+sourceCompatibility = '23'
 
 repositories {
     mavenCentral()
@@ -16,13 +16,13 @@ repositories {
 dependencyManagement {
     dependencies {
 
-        dependencySet(group: 'org.slf4j', version: '1.7.32') {
+        dependencySet(group: 'org.slf4j', version: '2.0.17') {
             entry 'slf4j-api'
             entry 'log4j-over-slf4j'
             entry 'jcl-over-slf4j'
             entry 'jul-to-slf4j'
         }
-        dependency 'ch.qos.logback:logback-classic:1.2.6'
+        dependency 'ch.qos.logback:logback-classic:1.5.18'
         dependency 'org.apache.commons:commons-lang3:3.8.1'
         dependency 'org.liquibase:liquibase-core:3.8.2'
         dependency 'commons-io:commons-io:2.8.0'
@@ -31,10 +31,13 @@ dependencyManagement {
         dependency 'org.apache.commons:commons-exec:1.3'
         dependency 'org.apache.commons:commons-lang3:3.12.0'
 
-        dependencySet(group: 'org.seleniumhq.selenium', version: '4.1.2') {
+        dependencySet(group: 'org.seleniumhq.selenium', version: '4.34.0') {
             entry 'selenium-api'
+            entry 'selenium-json'
+            entry 'selenium-http'
             entry 'selenium-java'
             entry 'selenium-chrome-driver'
+            entry 'selenium-chromium-driver'
             entry 'selenium-support'
             entry 'selenium-edge-driver'
             entry 'selenium-remote-driver'
@@ -42,18 +45,19 @@ dependencyManagement {
             entry 'selenium-opera-driver'
             entry 'selenium-ie-driver'
             entry 'selenium-firefox-driver'
-            entry 'selenium-devtools-v97'
+            entry 'selenium-devtools-v138'
         }
         dependency 'org.apache.commons:commons-exec:1.3'
     }
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot'
+    implementation 'org.springframework.boot:spring-boot:3.5.4'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.seleniumhq.selenium:selenium-api'
-    implementation 'org.seleniumhq.selenium:selenium-devtools-v97'
+    implementation 'org.seleniumhq.selenium:selenium-devtools-v138'
     implementation 'org.seleniumhq.selenium:selenium-chrome-driver'
+    implementation 'org.seleniumhq.selenium:selenium-chromium-driver'
     implementation 'org.seleniumhq.selenium:selenium-remote-driver'
     implementation 'org.seleniumhq.selenium:selenium-support'
     implementation 'org.apache.httpcomponents:httpclient'
